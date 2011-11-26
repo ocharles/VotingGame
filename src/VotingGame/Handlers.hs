@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module VotingGame.Handlers (landing, presentVote, login, processVote) where
+module VotingGame.Handlers (landing, presentVote, login, processVote, results) where
 
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8)
@@ -51,3 +51,8 @@ voteMap v = lookup v [("Within 3 Months", "3months")
                      ,("Unscheduled", "unscheduled")
                      ,("Abstain", "abstain")
                      ]
+
+results :: Handler VotingGame VotingGame ()
+results = do
+  rs <- findResults
+  blaze $ Views.results rs

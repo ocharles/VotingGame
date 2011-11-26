@@ -8,7 +8,7 @@ import Snap.Snaplet.Session.Backends.CookieSession (initCookieSessionManager)
 import Snap.Util.FileServe (serveDirectory)
 import Snap.Snaplet.Hdbc
 
-import VotingGame.Handlers (login, presentVote, landing, processVote)
+import VotingGame.Handlers
 import VotingGame.Snaplet
 
 votingGame :: SnapletInit VotingGame VotingGame
@@ -20,6 +20,7 @@ votingGame = makeSnaplet "VotingGame" "VotingGame" Nothing $ do
             , ("/vote", presentVote)
             , ("/login", login)
             , ("/enter-vote", processVote)
+            , ("/results", results)
             , ("", landing)
             ]
   return $ mkVotingGame sessionSnaplet db

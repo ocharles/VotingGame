@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module VotingGame.Views (landing, presentVote) where
+module VotingGame.Views (landing, presentVote, results) where
 
 import Data.Monoid (mempty)
 
@@ -75,6 +75,26 @@ presentVote editor issue = pageTemplate $ do
               H.tr $ do
                 H.td ! A.colspan "3" $ H.input ! A.name "vote" ! A.type_ "submit" ! A.value "Abstain"
                 H.td ! A.colspan "3" $ H.input ! A.name "vote" ! A.type_ "submit" ! A.value "Skip"
+
+
+results :: [(Issue, Int, Int, Int)] -> Html
+results rs = pageTemplate $ do
+  H.h1 "And The Results Are In..."
+  H.table $ do
+    H.thead $
+      H.tr $ do
+        H.th "Issue"
+        H.th "Within 3 Months"
+        H.th "Within 12 Months"
+        H.th "Unscheduled"
+    H.tbody $ showResults rs
+  where showResults rs' = showResult `mapM_` rs'
+        showResult (issue, mo12, mo3, unsched) =
+          H.tr $ do
+            H.td $ toHtml $ issueTitle issue
+            H.td $ toHtml mo12
+            H.td $ toHtml mo3
+            H.td $ toHtml unsched
 
 pageTemplate :: Html -> Html
 pageTemplate body =
