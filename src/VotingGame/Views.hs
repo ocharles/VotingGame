@@ -2,6 +2,7 @@
 
 module VotingGame.Views (landing, presentVote, results) where
 
+import Control.Monad (when)
 import Data.Monoid (mempty)
 
 import Data.Text (Text)
@@ -11,8 +12,8 @@ import Text.Blaze (toHtml, toValue, (!), Html, preEscapedText)
 
 import VotingGame.Types
 
-landing :: Html
-landing = pageTemplate $ do
+landing :: Bool -> Html
+landing loginFailed = pageTemplate $ do
     H.h1 "Welcome!"
     H.p "Welcome to the MusicBrainz scheduling game!"
     H.p $ toHtml $
@@ -46,12 +47,14 @@ landing = pageTemplate $ do
               , "MusicBrainz account and start voting!"
               ]
     H.form ! A.action "/login" ! A.method "POST" $ do
+      when loginFailed $
+        H.p "Oops! It seems those login details aren't correct, please try again"
       H.p ! A.class_ "row" $ do
         H.label "Editor name:"
         H.input ! A.name "editor"
       H.p ! A.class_ "row" $ do
         H.label "Password:"
-        H.input ! A.type_ "password"
+        H.input ! A.name "password" ! A.type_ "password"
       H.p ! A.class_ "row indent" $ do
         H.input ! A.type_ "submit" ! A.value "Lets Play!"
 

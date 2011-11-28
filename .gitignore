@@ -1,0 +1,5 @@
+*.hi
+VotingGame
+log/
+site_key.txt
+*.o
