@@ -9,11 +9,27 @@ main = do
   putStrLn "Finding issues..."
   issues <- getIssues activeFilter
   putStrLn "Inserting issues..."
-  insertIssue dbh `mapM_` issues
-  putStrLn "Done!"
-  commit dbh
+  withTransaction dbh $ \conn -> do
+    run conn "CREATE TEMPORARY TABLE tmp_issue (title TEXT, body TEXT, link TEXT)" []
+    insertIssue conn `mapM_` issues
+    run conn (unlines [ "UPDATE issue SET visible = TRUE" ]) []
+    run conn (unlines [ "UPDATE issue SET visible = FALSE"
+                      , "FROM ("
+                      , "SELECT DISTINCT title, body, link FROM issue"
+                      , "EXCEPT"
+                      , "SELECT DISTINCT title, body, link FROM tmp_issue"
+                      , ") j WHERE j.link = issue.link"
+                      ]) []
+    run conn (unlines [ "INSERT INTO issue (title, body, link)"
+                      , "SELECT title, body, link FROM tmp_issue"
+                      , "WHERE link NOT IN (SELECT link FROM issue)"
+                      ]) []
+    putStrLn "Done!"
   where insertIssue dbh issue = do
-          run dbh "INSERT INTO issue (title, body, link) VALUES (?, ?, ?)"
+          run dbh (unlines [ "INSERT INTO tmp_issue (title, body, link)"
+                           , "SELECT * FROM (VALUES (?, ?, ?)) s (title, body, link)"
+                           , "WHERE s.link NOT IN (SELECT link FROM issue)"
+                           ])
                   [ toSql $ issueTitle issue
                   , toSql $ issueBody issue
                   , toSql $ issueLink issue
