@@ -24,7 +24,7 @@ presentVote = do
   case editor of
     Just e -> do
       issue <- randomIssue e
-      blaze $ Views.presentVote e issue
+      blaze $ maybe Views.nothingToDo (Views.presentVote e) issue
     Nothing -> redirect "/"
 
 login :: Handler VotingGame VotingGame ()

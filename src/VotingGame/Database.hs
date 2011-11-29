@@ -7,10 +7,12 @@ import Snap.Snaplet.Hdbc (withTransaction, query, HasHdbc)
 
 import VotingGame.Types
 
-randomIssue :: (Functor m, HasHdbc m c s) => Text -> m Issue
+randomIssue :: (Functor m, HasHdbc m c s) => Text -> m (Maybe Issue)
 randomIssue editor = do
-  row <- head `fmap` query "SELECT title, body, link FROM issue WHERE link NOT IN (SELECT issue FROM vote WHERE editor = ?) ORDER BY random() LIMIT 1" [ toSql editor ]
-  return $ issueFromRow row
+  row <- query "SELECT title, body, link FROM issue WHERE link NOT IN (SELECT issue FROM vote WHERE editor = ?) ORDER BY random() LIMIT 1" [ toSql editor ]
+  case row of
+    [] -> return Nothing
+    rs -> return $ Just $ issueFromRow $ head row
 
 registerVote :: (Functor m, HasHdbc m c s) => Text -> Text -> Text -> m ()
 registerVote editor vote issue = withTransaction $ \conn -> do

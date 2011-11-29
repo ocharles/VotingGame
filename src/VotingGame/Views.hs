@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module VotingGame.Views (landing, presentVote, results) where
+module VotingGame.Views (landing, presentVote, results, nothingToDo) where
 
 import Control.Monad (when)
 import Data.Monoid (mempty)
@@ -11,6 +11,13 @@ import qualified Text.Blaze.Html5.Attributes as A
 import Text.Blaze (toHtml, toValue, (!), Html, preEscapedText)
 
 import VotingGame.Types
+
+nothingToDo :: Html
+nothingToDo = pageTemplate $ do
+  H.h1 "Nothing To Vote On!"
+  H.p "You've voted on every issue we currently have to schedule... you rock!"
+  H.p "Check back soon as we add add more issues to schedule."
+  H.p "Thanks your help!"
 
 landing :: Bool -> Html
 landing loginFailed = pageTemplate $ do
