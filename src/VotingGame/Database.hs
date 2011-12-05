@@ -9,7 +9,7 @@ import VotingGame.Types
 
 randomIssue :: (Functor m, HasHdbc m c s) => Text -> m (Maybe Issue)
 randomIssue editor = do
-  row <- query "SELECT title, body, link FROM issue WHERE link NOT IN (SELECT issue FROM vote WHERE editor = ?) ORDER BY random() LIMIT 1" [ toSql editor ]
+  row <- query "SELECT title, body, link FROM issue WHERE visible AND link NOT IN (SELECT issue FROM vote WHERE editor = ?) ORDER BY random() LIMIT 1" [ toSql editor ]
   case row of
     [] -> return Nothing
     rs -> return $ Just $ issueFromRow $ head rs
