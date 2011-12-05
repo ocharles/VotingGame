@@ -15,9 +15,9 @@ main = do
     run conn (unlines [ "UPDATE issue SET visible = TRUE" ]) []
     run conn (unlines [ "UPDATE issue SET visible = FALSE"
                       , "FROM ("
-                      , "SELECT DISTINCT title, body, link FROM issue"
+                      , "SELECT DISTINCT link FROM issue"
                       , "EXCEPT"
-                      , "SELECT DISTINCT title, body, link FROM tmp_issue"
+                      , "SELECT DISTINCT link FROM tmp_issue"
                       , ") j WHERE j.link = issue.link"
                       ]) []
     run conn (unlines [ "INSERT INTO issue (title, body, link)"
