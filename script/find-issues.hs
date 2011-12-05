@@ -27,8 +27,7 @@ main = do
     putStrLn "Done!"
   where insertIssue dbh issue = do
           run dbh (unlines [ "INSERT INTO tmp_issue (title, body, link)"
-                           , "SELECT * FROM (VALUES (?, ?, ?)) s (title, body, link)"
-                           , "WHERE s.link NOT IN (SELECT link FROM issue)"
+                           , "VALUES (?, ?, ?)"
                            ])
                   [ toSql $ issueTitle issue
                   , toSql $ issueBody issue

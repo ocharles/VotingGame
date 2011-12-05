@@ -2,7 +2,7 @@ Name: scheduling-game
 Author: Oliver Charles
 Build-type: Simple
 Version: 0.1
-Cabal-version: >= 1.2
+Cabal-version: >= 1.9
 
 Executable scheduling-game
   hs-source-dirs: src
@@ -24,3 +24,15 @@ Executable scheduling-game
     transformers >= 0.2.2.0 && < 0.3,
     bytestring >= 0.9.1.10 && < 1,
     snap-server >= 0.6 && < 0.7
+
+Executable scheduling-game-sync
+  hs-source-dirs: script src
+  Main-is: find-issues.hs
+  Build-depends:
+    base >= 4 && <5,
+    http-enumerator >= 0.7.1 && <0.8,
+    xml-enumerator >= 0.4.1 && < 0.5,
+    text >= 0.11.1.5 && < 0.12,
+    bytestring >= 0.9.1.10 && < 1,
+    HDBC >= 2.3.1.0 && < 3,
+    HDBC-postgresql >= 2.3.2.0 && < 3
