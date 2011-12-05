@@ -3,3 +3,4 @@ VotingGame
 log/
 site_key.txt
 *.o
+/dist
