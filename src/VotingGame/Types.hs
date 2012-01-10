@@ -5,4 +5,4 @@ import Data.Text
 data Issue = Issue { issueTitle :: Text
                    , issueLink :: Text
                    , issueBody :: Text
-                   }
+                   } deriving Show

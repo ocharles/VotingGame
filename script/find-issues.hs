@@ -1,17 +1,22 @@
+import Control.Monad (void)
+import Data.Conduit
+import qualified Data.Conduit.List as CL
 import Database.HDBC
 import Database.HDBC.PostgreSQL (connectPostgreSQL)
+import Network.HTTP.Conduit
 import VotingGame.IssueParser
 import VotingGame.Types
 
 main = do
   putStrLn "Connecting..."
   dbh <-  connectPostgreSQL "dbname=scheduling user=scheduling"
-  putStrLn "Finding issues..."
-  issues <- getIssues activeFilter
-  putStrLn "Inserting issues..."
+  request <- parseUrl "http://tickets.musicbrainz.org/sr/jira.issueviews:searchrequest-xml/10111/SearchRequest-10111.xml?tempMax=1000"
+  putStrLn "Syncing..."
   withTransaction dbh $ \conn -> do
     run conn "CREATE TEMPORARY TABLE tmp_issue (title TEXT, body TEXT, link TEXT)" []
-    insertIssue conn `mapM_` issues
+    withManager $ \m -> do
+      res <- http request m
+      responseBody res $= getIssues $$ CL.mapM_ (insertIssue conn)
     run conn (unlines [ "UPDATE issue SET visible = TRUE" ]) []
     run conn (unlines [ "UPDATE issue SET visible = FALSE"
                       , "FROM ("
@@ -25,7 +30,7 @@ main = do
                       , "WHERE link NOT IN (SELECT link FROM issue)"
                       ]) []
     putStrLn "Done!"
-  where insertIssue dbh issue = do
+  where insertIssue dbh issue = void $ do
           run dbh (unlines [ "INSERT INTO tmp_issue (title, body, link)"
                            , "VALUES (?, ?, ?)"
                            ])

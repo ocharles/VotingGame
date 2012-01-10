@@ -101,7 +101,8 @@ results rs = pageTemplate $ do
   where showResults rs' = showResult `mapM_` rs'
         showResult (issue, mo12, mo3, unsched) =
           H.tr $ do
-            H.td $ toHtml $ issueTitle issue
+            H.td $
+	      H.a ! A.href (toValue $ issueLink issue) $ (toHtml $ issueTitle issue)
             H.td $ toHtml mo12
             H.td $ toHtml mo3
             H.td $ toHtml unsched
