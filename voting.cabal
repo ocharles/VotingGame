@@ -9,8 +9,8 @@ Executable scheduling-game
   Main-is: VotingGame.hs
   Build-depends:
     base >= 4 && < 5,
-    snaplet-hdbc >= 0.6.3 && < 0.7,
-    snap >= 0.6.0.1 && < 0.7,
+    snaplet-hdbc >= 0.6.3 && < 0.8,
+    snap >= 0.6.0.1 && < 0.8,
     data-lens-template >= 2.1.1.1 && < 3,
     HDBC-postgresql >= 2.3.2.0 && < 3,
     mtl >= 2.0.1.0 && < 3,
@@ -19,11 +19,11 @@ Executable scheduling-game
     HDBC >= 2.3.1.0 && < 3,
     blaze-html >= 0.4.1.6 && < 0.5,
     snap-blaze >= 0.0.0.1 && < 0.1,
-    snap-core >= 0.6 && < 0.7,
+    snap-core >= 0.6 && < 0.8,
     curl >= 1.3.7 && < 1.4,
     transformers >= 0.2.2.0 && < 0.3,
     bytestring >= 0.9.1.10 && < 1,
-    snap-server >= 0.6 && < 0.7,
+    snap-server >= 0.6 && < 0.8,
     xml-types
 
 Executable scheduling-game-sync

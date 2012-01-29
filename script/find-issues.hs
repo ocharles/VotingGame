@@ -10,7 +10,7 @@ import VotingGame.Types
 main = do
   putStrLn "Connecting..."
   dbh <-  connectPostgreSQL "dbname=scheduling user=scheduling"
-  request <- parseUrl "http://tickets.musicbrainz.org/sr/jira.issueviews:searchrequest-xml/10111/SearchRequest-10111.xml?tempMax=1000"
+  request <- parseUrl "http://tickets.musicbrainz.org/sr/jira.issueviews:searchrequest-rss/10111/SearchRequest-10111.xml?tempMax=1000"
   putStrLn "Syncing..."
   withTransaction dbh $ \conn -> do
     run conn "CREATE TEMPORARY TABLE tmp_issue (title TEXT, body TEXT, link TEXT)" []
@@ -29,6 +29,8 @@ main = do
                       , "SELECT title, body, link FROM tmp_issue"
                       , "WHERE link NOT IN (SELECT link FROM issue)"
                       ]) []
+    run conn (unlines [ "UPDATE issue SET body = tmp.body FROM tmp_issue tmp"
+                      , "WHERE tmp.link = issue.link" ]) []
     putStrLn "Done!"
   where insertIssue dbh issue = void $ do
           run dbh (unlines [ "INSERT INTO tmp_issue (title, body, link)"
