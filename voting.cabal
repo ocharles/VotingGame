@@ -9,22 +9,22 @@ Executable scheduling-game
   Main-is: VotingGame.hs
   Build-depends:
     base >= 4 && < 5,
-    snaplet-hdbc >= 0.6.3 && < 0.8,
-    snap >= 0.6.0.1 && < 0.8,
+    snaplet-postgresql-simple,
+    snap >= 0.9 && < 0.10,
     data-lens-template >= 2.1.1.1 && < 3,
-    HDBC-postgresql >= 2.3.2.0 && < 3,
+    postgresql-simple,
     mtl >= 2.0.1.0 && < 3,
     text >= 0.11.1.5 && < 0.12,
     containers >= 0.4.0.0 && < 0.5,
-    HDBC >= 2.3.1.0 && < 3,
-    blaze-html >= 0.4.1.6 && < 0.5,
-    snap-blaze >= 0.0.0.1 && < 0.1,
-    snap-core >= 0.6 && < 0.8,
+    blaze-html >= 0.5.0.0 && < 0.6,
+    snap-blaze >= 0.2 && < 0.3,
+    snap-core >= 0.9 && < 0.10,
     curl >= 1.3.7 && < 1.4,
-    transformers >= 0.2.2.0 && < 0.3,
+    transformers >= 0.3 && < 0.4,
     bytestring >= 0.9.1.10 && < 1,
-    snap-server >= 0.6 && < 0.8,
-    xml-types
+    snap-server >= 0.9 && < 0.10,
+    xml-types,
+    blaze-markup >= 0.5.1.0 && < 0.6
 
 Executable scheduling-game-sync
   hs-source-dirs: script src
@@ -36,7 +36,6 @@ Executable scheduling-game-sync
     conduit,
     text >= 0.11.1.5 && < 0.12,
     bytestring >= 0.9.1.10 && < 1,
-    HDBC >= 2.3.1.0 && < 3,
-    HDBC-postgresql >= 2.3.2.0 && < 3,
+    postgresql-simple,
     xml-types,
-    transformers >= 0.2.2.0 && < 0.3
+    transformers >= 0.3 && < 0.4

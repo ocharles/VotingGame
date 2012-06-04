@@ -18,7 +18,7 @@ import VotingGame.Types (Issue(..))
 activeFilter :: String
 activeFilter = "http://tickets.musicbrainz.org/sr/jira.issueviews:searchrequest-rss/10111/SearchRequest-10111.xml?tempMax=1000"
 
-getIssues :: ResourceThrow m => Conduit ByteString m Issue
+getIssues :: MonadThrow m => Conduit ByteString m Issue
 getIssues = parseBytes def =$= sequenceSink () preludeSink
   where preludeSink _ = goTo "item" >> return (StartConduit itemConduit)
         itemConduit = sequenceSink () itemSink
@@ -39,7 +39,7 @@ getIssues = parseBytes def =$= sequenceSink () preludeSink
             Left e -> error "I have no idea what I'm doing"
             Right n -> return $ Emit () . (:[]) $ parseItem $ fromNode n
 
-fromEv :: ResourceThrow m => Sink Event m Element
+fromEv :: MonadThrow m => Sink Event m Element
 fromEv = require goE
   where
     many f =
@@ -57,7 +57,7 @@ fromEv = require goE
             Just y -> return y
             Nothing -> do
                 y <- CL.head
-                lift $ resourceThrow $ InvalidEventStream $ "Document must have a single root element, got: " ++ show y
+                lift $ monadThrow $ InvalidEventStream $ "Document must have a single root element, got: " ++ show y
     goE = do
         x <- CL.peek
         case x of
@@ -69,7 +69,7 @@ fromEv = require goE
         y <- CL.head
         if y == Just (EventEndElement n)
             then return $ Element n as $ compressNodes ns
-            else lift $ resourceThrow $ InvalidEventStream $ "Missing end element for " ++ show n ++ ", got: " ++ show y
+            else lift $ monadThrow $ InvalidEventStream $ "Missing end element for " ++ show n ++ ", got: " ++ show y
     goN = do
         x <- CL.peek
         case x of

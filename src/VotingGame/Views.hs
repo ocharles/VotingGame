@@ -2,15 +2,17 @@
 
 module VotingGame.Views (landing, presentVote, results, nothingToDo) where
 
-import Control.Monad (when)
-import Data.Monoid (mempty)
+import           Control.Monad (when)
+import           Data.Monoid (mempty)
+import           Data.Ratio
 
-import Data.Text (Text)
+import           Data.Text (Text)
+import           Text.Blaze (preEscapedToMarkup)
+import           Text.Blaze.Html (toHtml, toValue, (!), Html)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
-import Text.Blaze (toHtml, toValue, (!), Html, preEscapedText)
 
-import VotingGame.Types
+import           VotingGame.Types
 
 nothingToDo :: Html
 nothingToDo = pageTemplate $ do
@@ -70,7 +72,7 @@ presentVote editor issue = pageTemplate $ do
     H.h1 $ toHtml $ issueTitle issue
     voteForm
     H.div ! A.id "content" $
-      preEscapedText $ issueBody issue
+      preEscapedToMarkup $ issueBody issue
     H.script $ toHtml $ unlines [ "$('#content style').remove()" ]
     voteForm
   where voteForm =
@@ -87,19 +89,47 @@ presentVote editor issue = pageTemplate $ do
                 H.td ! A.colspan "3" $ H.input ! A.name "vote" ! A.type_ "submit" ! A.value "Skip"
 
 
-results :: [(Issue, Int, Int, Int)] -> Html
+results :: [IssueVotes] -> Html
 results rs = pageTemplate $ do
   H.h1 "And The Results Are In..."
-  H.table $ do
-    H.thead $
-      H.tr $ do
-        H.th "Issue"
-        H.th "Within 3 Months"
-        H.th "Within 12 Months"
-        H.th "Unscheduled"
-    H.tbody $ showResults rs
-  where showResults rs' = showResult `mapM_` rs'
-        showResult (issue, mo12, mo3, unsched) =
+
+  H.h2 "70% or more for 3 months"
+  showResults $
+    filter (\(IssueVotes issue three twelve unsched) ->
+               (three + twelve + unsched > 10) &&
+               (three % (three + twelve + unsched) >= 0.7)) rs
+
+  H.h3 "70% or more for 12 months"
+  showResults $
+    filter (\(IssueVotes issue three twelve unsched) ->
+               (three + twelve + unsched > 10) &&
+               (twelve % (three + twelve + unsched) >= 0.7)) rs
+
+  H.h3 "70% or more for unscheduled"
+  showResults $
+    filter (\(IssueVotes issue three twelve unsched) ->
+               (three + twelve + unsched > 10) &&
+               (unsched % (three + twelve + unsched) >= 0.7)) rs
+
+  H.h3 "50% or more of the votes are for 12 months and 70% or more for either 3 months or 12 months."
+  showResults $
+    filter (\(IssueVotes issue three twelve unsched) ->
+               (three + twelve + unsched > 10) &&
+               ((three + twelve) % (three + twelve + unsched) >= 0.7) &&
+               (twelve % (three + twelve + unsched) >= 0.5)) rs
+
+  H.h2 "All Results"
+  showResults rs
+  where showResults rs' = do
+          H.table $ do
+            H.thead $
+              H.tr $ do
+                H.th "Issue"
+                H.th "Within 3 Months"
+                H.th "Within 12 Months"
+                H.th "Unscheduled"
+            H.tbody $ showResult `mapM_` rs'
+        showResult (IssueVotes issue mo3 mo12 unsched) =
           H.tr $ do
             H.td $
 	      H.a ! A.href (toValue $ issueLink issue) $ (toHtml $ issueTitle issue)

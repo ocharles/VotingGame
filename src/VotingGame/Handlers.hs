@@ -11,7 +11,7 @@ import Data.Maybe (fromJust, isJust)
 import Network.Curl
 import Snap.Core hiding (getRequest)
 import Snap.Snaplet
-import Snap.Snaplet.Session
+import Snap.Snaplet.Session (getFromSession, setInSession, commitSession)
 import Snap.Blaze (blaze)
 
 import qualified VotingGame.Views as Views
