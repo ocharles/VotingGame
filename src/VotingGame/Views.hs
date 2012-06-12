@@ -93,30 +93,26 @@ results :: [IssueVotes] -> Html
 results rs = pageTemplate $ do
   H.h1 "And The Results Are In..."
 
-  H.h2 "70% or more for 3 months"
-  showResults $
-    filter (\(IssueVotes issue three twelve unsched) ->
-               (three + twelve + unsched > 10) &&
-               (three % (three + twelve + unsched) >= 0.7)) rs
+  showSection "70% or more for 3 months" $
+    \(IssueVotes issue three twelve unsched) ->
+       (three + twelve + unsched > 10) &&
+       (three % (three + twelve + unsched) >= 0.7)
 
-  H.h3 "70% or more for 12 months"
-  showResults $
-    filter (\(IssueVotes issue three twelve unsched) ->
-               (three + twelve + unsched > 10) &&
-               (twelve % (three + twelve + unsched) >= 0.7)) rs
+  showSection "70% or more for 12 months" $
+    \(IssueVotes issue three twelve unsched) ->
+       (three + twelve + unsched > 10) &&
+       (twelve % (three + twelve + unsched) >= 0.7)
 
-  H.h3 "70% or more for unscheduled"
-  showResults $
-    filter (\(IssueVotes issue three twelve unsched) ->
-               (three + twelve + unsched > 10) &&
-               (unsched % (three + twelve + unsched) >= 0.7)) rs
+  showSection "70% or more for unscheduled" $
+    \(IssueVotes issue three twelve unsched) ->
+       (three + twelve + unsched > 10) &&
+       (unsched % (three + twelve + unsched) >= 0.7)
 
-  H.h3 "50% or more of the votes are for 12 months and 70% or more for either 3 months or 12 months."
-  showResults $
-    filter (\(IssueVotes issue three twelve unsched) ->
-               (three + twelve + unsched > 10) &&
-               ((three + twelve) % (three + twelve + unsched) >= 0.7) &&
-               (twelve % (three + twelve + unsched) >= 0.5)) rs
+  showSection "50% or more of the votes are for 12 months and 70% or more for either 3 months or 12 months." $
+    \(IssueVotes issue three twelve unsched) ->
+       (three + twelve + unsched > 10) &&
+       ((three + twelve) % (three + twelve + unsched) >= 0.7) &&
+       (twelve % (three + twelve + unsched) >= 0.5)
 
   H.h2 "All Results"
   showResults rs
@@ -133,9 +129,12 @@ results rs = pageTemplate $ do
           H.tr $ do
             H.td $
 	      H.a ! A.href (toValue $ issueLink issue) $ (toHtml $ issueTitle issue)
-            H.td $ toHtml mo12
             H.td $ toHtml mo3
+            H.td $ toHtml mo12
             H.td $ toHtml unsched
+        showSection h f = do
+          let rs' = filter f rs
+          when (not $ null rs') $ H.h2 "70% or more for 3 months" >> showResults rs'  >> H.hr
 
 pageTemplate :: Html -> Html
 pageTemplate body =
