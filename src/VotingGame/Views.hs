@@ -134,7 +134,7 @@ results rs = pageTemplate $ do
             H.td $ toHtml unsched
         showSection h f = do
           let rs' = filter f rs
-          when (not $ null rs') $ H.h2 "70% or more for 3 months" >> showResults rs'  >> H.hr
+          when (not $ null rs') $ H.h2 h >> showResults rs'  >> H.hr
 
 pageTemplate :: Html -> Html
 pageTemplate body =
