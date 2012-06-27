@@ -39,3 +39,5 @@ Executable scheduling-game-sync
     postgresql-simple,
     xml-types,
     transformers >= 0.3 && < 0.4
+  GHC-Options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
+               -fno-warn-orphans -fno-warn-unused-do-bind -with-rtsopts=-A4M -with-rtsopts=-N
